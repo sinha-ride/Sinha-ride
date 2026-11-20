@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "525528980558",
+    "project_id": "sinha-ride",
+    "storage_bucket": "sinha-ride.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525528980558:android:4ad4e582df8b82d306771f",
+        "android_client_info": {
+          "package_name": "com.sinharide.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPNJJgYKh8ez4aXRx48T_dOccQwCCo6_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
