@@ -1,0 +1,164 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const SinhaRideApp());
+}
+
+const Color srYellow = Color(0xFFFFD400);
+const Color srBlack = Color(0xFF101010);
+
+class SinhaRideApp extends StatelessWidget {
+  const SinhaRideApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'SINHA RIDE',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: srYellow,
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF7F7F7),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: srBlack,
+          foregroundColor: Colors.white,
+          centerTitle: false,
+        ),
+        useMaterial3: true,
+      ),
+      home: const CustomerHomePage(),
+    );
+  }
+}
+
+enum VehicleType { car, auto, bike }
+
+extension VehicleDetails on VehicleType {
+  String get label => switch (this) {
+        VehicleType.car => 'Car',
+        VehicleType.auto => 'Auto',
+        VehicleType.bike => 'Bike',
+      };
+
+  String get symbol => switch (this) {
+        VehicleType.car => '🚗',
+        VehicleType.auto => '🛺',
+        VehicleType.bike => '🏍️',
+      };
+
+  int get sampleFare => switch (this) {
+        VehicleType.car => 89,
+        VehicleType.auto => 49,
+        VehicleType.bike => 29,
+      };
+
+  String get description => switch (this) {
+        VehicleType.car => 'Comfortable ride',
+        VehicleType.auto => 'Affordable city ride',
+        VehicleType.bike => 'Quick solo ride',
+      };
+}
+
+class RideBooking {
+  RideBooking({
+    required this.pickup,
+    required this.drop,
+    required this.vehicle,
+    required this.estimatedFare,
+    required this.createdAt,
+  });
+
+  final String pickup;
+  final String drop;
+  final VehicleType vehicle;
+  final int estimatedFare;
+  final DateTime createdAt;
+}
+
+class CustomerHomePage extends StatefulWidget {
+  const CustomerHomePage({super.key});
+
+  @override
+  State<CustomerHomePage> createState() => _CustomerHomePageState();
+}
+
+class _CustomerHomePageState extends State<CustomerHomePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _pickupController = TextEditingController();
+  final _dropController = TextEditingController();
+  VehicleType _selectedVehicle = VehicleType.car;
+  final List<RideBooking> _bookings = [];
+  int _tabIndex = 0;
+
+  @override
+  void dispose() {
+    _pickupController.dispose();
+    _dropController.dispose();
+    super.dispose();
+  }
+
+  void _bookRide() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final booking = RideBooking(
+      pickup: _pickupController.text.trim(),
+      drop: _dropController.text.trim(),
+      vehicle: _selectedVehicle,
+      estimatedFare: _selectedVehicle.sampleFare,
+      createdAt: DateTime.now(),
+    );
+
+    setState(() => _bookings.insert(0, booking));
+
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Booking request created'),
+        content: Text(
+          'Your ${booking.vehicle.label} booking request has been saved on '
+          'this device for this starter build.\n\n'
+          'Estimated sample fare: ₹${booking.estimatedFare}\n\n'
+          'Live driver matching and real payments are not connected yet.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() => _tabIndex = 1);
+            },
+            child: const Text('View my rides'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Row(
+          children: [
+            Icon(Icons.local_taxi, color: srYellow, size: 29),
+            SizedBox(width: 9),
+            Text('SINHA '),
+            Text('RIDE', style: TextStyle(color: srYellow)),
+          ],
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: () => _showInfo('Notifications will be added in a later version.'),
+            icon: const Icon(Icons.notifications_none),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: IndexedStack(
+          index: _tabIndex,
+          children: [
+            _buildHome(),
+            _buildRides(),
+h
